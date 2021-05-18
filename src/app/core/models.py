@@ -73,18 +73,41 @@ class Genre(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+class Category(models.Model):
+	name = models.CharField(max_length=64, verbose_name='Жанры')
+
+	def __str__(self):
+		return self.name
+
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=64, blank=True, null=True)
+    last_name = models.CharField(max_length=64, blank=True, null=True)
+
+    def __str__(self):
+	    return self.name
         
 
 class Book(models.Model):
-	genre = models.ForeignKey(Genre, on_delete=models.CASCADE, verbose_name='Жанр')
-	title = models.CharField(max_length=100, blank=True)
-	paper_count = models.IntegerField(blank=True)
-	rating = models.CharField(max_length=50, blank=True)
-	rating_count = models.IntegerField(blank=True)
-	status = models.CharField(max_length=50, blank=True)
-	category = models.IntegerField(blank=True)
-	photo = models.ImageField(blank=True)
-	short_description = models.TextField(blank=True)
+    title = models.CharField(max_length=100, blank=True, null=True)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, blank=True, null=True)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, blank=True, null=True)
+    AGE_CATEGORIES = [
+        ('0+', '0+'),
+        ('6+', '6+'),
+        ('12+', '12+'),
+        ('16+', '16+'),
+        ('18+', '18+')
+    ]
+    age_category = models.CharField(blank=True, null=True, max_length=10, choices=AGE_CATEGORIES, default='0+')
+    paper_count = models.IntegerField(blank=True, null=True)
+    rating = models.CharField(max_length=50, blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
+    photo = models.ImageField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
-	def __str__(self):
-		return self.title
+    def __str__(self):
+        return self.title
