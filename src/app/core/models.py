@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.db.models.fields import proxy
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
@@ -39,11 +40,16 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
 
-    # required
+    name = models.CharField(max_length=30, blank=True, null=True)
     username = models.CharField(max_length=30, unique=True, blank=True)
     email = models.EmailField(verbose_name="email", max_length=60, blank=True)
-
-    # optional
+    balance = models.PositiveIntegerField(blank=True, null=True)
+    AGE_CATEGORIES = [
+        ('Male', 'Мужской'),
+        ('Female', 'Женский'),
+    ]
+    sex = models.CharField(max_length=30, blank=True, null=True)
+    favourite_books = models.ManyToManyField('core.Book')
 
     # system
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -69,17 +75,39 @@ class User(AbstractBaseUser):
 
 
 class Genre(models.Model):
-	name = models.CharField(max_length=64, verbose_name='Жанры')
+    name = models.CharField(max_length=64, verbose_name='Жанры')
+    image = models.ImageField(blank=True, null=True)
 
-	def __str__(self):
-		return self.name
+    def __str__(self):
+        return self.name
+
+
+class Promo(models.Model):
+    book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
 
 
 class Category(models.Model):
-	name = models.CharField(max_length=64, verbose_name='Жанры')
+    name = models.CharField(max_length=64, verbose_name='Жанры')
+    image = models.ImageField(blank=True, null=True)
 
-	def __str__(self):
-		return self.name
+    def __str__(self):
+        return self.name
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
+    rating = models.PositiveIntegerField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
+
+
+class Chapter(models.Model):
+    name = models.CharField(max_length=64, verbose_name='Жанры')
+    book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Author(models.Model):
@@ -87,7 +115,7 @@ class Author(models.Model):
     last_name = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
-	    return self.name
+	    return str(self.first_name) + str(self.last_name)
         
 
 class Book(models.Model):
@@ -103,11 +131,19 @@ class Book(models.Model):
     ]
     age_category = models.CharField(blank=True, null=True, max_length=10, choices=AGE_CATEGORIES, default='0+')
     paper_count = models.IntegerField(blank=True, null=True)
-    rating = models.CharField(max_length=50, blank=True, null=True)
+    rating = models.PositiveIntegerField(blank=True, null=True)
     status = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
-    photo = models.ImageField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+
+    @property
+    def chapters_amount(self):
+        return len(Chapter.objects.filter(book=self))
+
+    @property
+    def chapters(self):
+        return Chapter.objects.filter(book=self)
 
     def __str__(self):
         return self.title
