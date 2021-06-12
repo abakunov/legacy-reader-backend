@@ -49,7 +49,8 @@ class User(AbstractBaseUser):
         ('Female', 'Женский'),
     ]
     sex = models.CharField(max_length=30, blank=True, null=True)
-    favourite_books = models.ManyToManyField('core.Book')
+    favourite_books = models.ManyToManyField('core.Book', blank=True)
+    unlocked_chapters = models.ManyToManyField('core.Chapter', blank=True)
 
     # system
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -75,7 +76,7 @@ class User(AbstractBaseUser):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=64, verbose_name='Жанры')
+    name = models.CharField(max_length=64)
     image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
@@ -88,7 +89,7 @@ class Promo(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=64, verbose_name='Жанры')
+    name = models.CharField(max_length=64)
     image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
@@ -103,8 +104,11 @@ class Review(models.Model):
 
 
 class Chapter(models.Model):
-    name = models.CharField(max_length=64, verbose_name='Жанры')
+    name = models.CharField(max_length=64)
+    cost = models.PositiveIntegerField(blank=True, null=True)
+    number_in_book = models.PositiveIntegerField(blank=True, null=True)
     book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -136,6 +140,7 @@ class Book(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    file = models.FileField(blank=True, null=True)
 
     @property
     def chapters_amount(self):

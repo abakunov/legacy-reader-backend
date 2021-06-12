@@ -13,5 +13,10 @@ api_urls = [
     path('book/promo/get/', GetPromoView.as_view(), name='get_promo'),
     path('book/genres/get/', GetGenresView.as_view(), name='get_genres'),
     path('book/categories/get/', GetCategoryView.as_view(), name='get_categories'),
-
+    path('book/get/', GetBooksView.as_view(), name='get_books'),
+    path('book/main_page/get/', GetMainPageDataView.as_view(), name='get_main_page'),
+    path('book/chapters_list/get/', GetChaptersListView.as_view(), name='get_chapters_list'),
+    path('book/chapter/get/', GetChapterView.as_view(), name='get_chapter'),
+    path('book/chapter/unlock/', UnlockChapterView.as_view(), name='unlock_chapter'),
+    path('book/chapter/unlock/all/', UnlockAllChaptersView.as_view(), name='unlock_all_chapters'),
 ]

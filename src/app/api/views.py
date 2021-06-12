@@ -4,7 +4,9 @@ from rest_framework import generics, views
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from core.models import User, Book
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from core.models import User, Book, Chapter
 from .serializers import *
 from app.settings import BASE_URL
 
@@ -25,6 +27,56 @@ class GetDetailedBookView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AllowAny]
+
+
+class GetBooksView(generics.ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['rating', 'genre', 'category']
+    search_fields = ['title']
+
+
+class GetChaptersListView(views.APIView):
+    def get(self, request):
+        try:
+            user = request.GET['user']
+            book = request.GET['book']
+            queryset = Chapter.objects.filter(book=Book.objects.get(pk=book))
+            data = []
+            for chapter in queryset:
+                data.append({
+                    'id': chapter.pk,
+                    'name': chapter.name,
+                    'book': chapter.book.pk,
+                    'cost': chapter.cost,
+                    'number_in_book': chapter.number_in_book,
+                    'is_unlocked': chapter in User.objects.get(pk=user).unlocked_chapters.all(),
+                })
+            return Response({'data': data}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetChapterView(views.APIView):
+    def get(self, request):
+        try:
+            chapter = request.GET['chapter']
+            user = request.GET['user']
+            chapter = Chapter.objects.get(pk=chapter)
+            data = {
+                'id': chapter.pk,
+                'name': chapter.name,
+                'book': chapter.book.pk,
+                'cost': chapter.cost,
+                'number_in_book': chapter.number_in_book,
+                'is_unlocked': chapter in User.objects.get(pk=user).unlocked_chapters.all(),
+                'text': chapter.text
+            }
+            return Response({'data': data}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetBalanceView(generics.RetrieveAPIView):
@@ -53,7 +105,7 @@ class GetPromoView(generics.ListAPIView):
 
 class GetCategoryView(views.APIView):
     def get(self, request):
-        # try:
+        try:
             queryset = Category.objects.all()
             data = []
             for category in queryset:
@@ -66,8 +118,8 @@ class GetCategoryView(views.APIView):
                     'first_books': first_books,
                 })
             return Response({'data': data}, status=status.HTTP_200_OK)
-        # except Exception:
-        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetFavouriteBooksView(generics.ListAPIView):
@@ -90,6 +142,76 @@ class AddFavouriteBooksView(views.APIView):
                 user.favourite_books.add(book)
             if action == 'remove':
                 user.favourite_books.remove(book)
+            return Response({'status': 'OK'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetMainPageDataView(views.APIView):
+    def get(self, request):
+        try:
+            promo = PromoSerializer(Promo.objects.all(), many=True).data
+            for p in promo:
+                p['image'] = BASE_URL + p['image']
+
+            genres = GenreSerializer(Genre.objects.all(), many=True).data
+            for g in genres:
+                g['image'] = BASE_URL + g['image']
+
+            queryset = Category.objects.all()
+            categories = []
+            for category in queryset:
+                first_books = BookSerializer(Book.objects.filter(category=category)[:10], many=True).data
+                for b in first_books:
+                    b['image'] = BASE_URL + b['image']
+                categories.append({
+                    'id': category.pk,
+                    'name': category.name,
+                    'first_books': first_books,
+                })
+
+            data = {
+                'promo': promo,
+                'genres': genres,
+                'categories': categories,
+            }
+            return Response({'data': data}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UnlockChapterView(views.APIView):
+    def get(self, request):
+        try:
+            chapter = Chapter.objects.get(pk=request.GET['chapter'])
+            user = User.objects.get(pk=request.GET['user'])
+            if chapter not in user.unlocked_chapters.all():
+                if user.balance >= chapter.cost:
+                    user.unlocked_chapters.add(chapter)
+                    user.balance = user.balance - chapter.cost
+                    user.save()
+                else:
+                    return Response({'status': 'Insufficient funds'}, status=status.HTTP_200_OK)
+                return Response({'status': 'OK'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'status': 'Chapter already unlocked'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UnlockAllChaptersView(views.APIView):
+    def get(self, request):
+        try:
+            book = Book.objects.get(pk=request.GET['book'])
+            user = User.objects.get(pk=request.GET['user'])
+            for chapter in Chapter.objects.filter(book=book):
+                if chapter not in user.unlocked_chapters.all():
+                    if user.balance >= chapter.cost:
+                        user.unlocked_chapters.add(chapter)
+                        user.balance = user.balance - chapter.cost
+                        user.save()
+                    else:
+                        return Response({'status': 'Insufficient funds'}, status=status.HTTP_200_OK)
             return Response({'status': 'OK'}, status=status.HTTP_200_OK)
         except Exception:
             return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
