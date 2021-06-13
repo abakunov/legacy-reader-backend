@@ -38,3 +38,10 @@ class PromoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Promo
         fields = '__all__'
+
+    
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['font_size', 'distance_between_lines', 'side_padding', 'brightness', 'theme', 'background_color', 'text_color']
+        

@@ -44,13 +44,41 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=30, unique=True, blank=True)
     email = models.EmailField(verbose_name="email", max_length=60, blank=True)
     balance = models.PositiveIntegerField(blank=True, null=True)
-    AGE_CATEGORIES = [
+    SEX_CATEGORIES = [
         ('Male', 'Мужской'),
         ('Female', 'Женский'),
     ]
-    sex = models.CharField(max_length=30, blank=True, null=True)
+    sex = models.CharField(max_length=30, blank=True, null=True, choices=SEX_CATEGORIES)
     favourite_books = models.ManyToManyField('core.Book', blank=True)
     unlocked_chapters = models.ManyToManyField('core.Chapter', blank=True)
+
+    #settings
+    FONT_SIZE_CATEGORIES = [
+        ('Standart', 'Стандартный'),
+        ('Big', 'Большой'),
+        ('Very big', 'Очень большой'),
+    ]
+    font_size = models.CharField(max_length=30, blank=True, null=True, choices=FONT_SIZE_CATEGORIES)
+    distance_between_lines = models.PositiveIntegerField(blank=True, null=True)
+    side_padding = models.PositiveIntegerField(blank=True, null=True)
+    brightness = models.PositiveIntegerField(blank=True, null=True)
+    THEME_CHOICES = [
+        ('White', 'Белая'),
+        ('Sepia', 'Сепия'),
+        ('Night', 'Ночная'),
+        ('Custom', 'Пользовательская'),
+    ]
+    theme = models.CharField(max_length=30, blank=True, null=True, choices=THEME_CHOICES)
+    COLOR_CHOICES = [
+        ('White', 'Белый'),
+        ('Black', 'Черный'),
+        ('Red', 'Красный'),
+        ('Blue', 'Синий'),
+        ('Green', 'Зеленый'),
+        ('Brown', 'Коричневый'),
+    ]
+    background_color = models.CharField(max_length=50, blank=True, null=True, choices=COLOR_CHOICES)
+    text_color = models.CharField(max_length=50, blank=True, null=True, choices=COLOR_CHOICES)
 
     # system
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -86,6 +114,12 @@ class Genre(models.Model):
 class Promo(models.Model):
     book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
+
+
+class BookStatus(models.Model):
+    book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
+    chapter = models.ForeignKey('core.Chapter', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey('core.User', on_delete=models.CASCADE, blank=True, null=True)
 
 
 class Category(models.Model):

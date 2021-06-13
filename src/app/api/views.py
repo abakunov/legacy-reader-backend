@@ -97,6 +97,18 @@ class GetGenresView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
 
+class GetUsersReadingSettingsView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSettingsSerializer
+    permission_classes = [AllowAny]
+
+
+class UpdateUsersReadingSettingsView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSettingsSerializer
+    permission_classes = [AllowAny]
+
+
 class GetPromoView(generics.ListAPIView):
     queryset = Promo.objects.all()
     serializer_class = PromoSerializer
