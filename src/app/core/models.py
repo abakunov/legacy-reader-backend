@@ -5,12 +5,26 @@ from django.db.models.fields import proxy
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+import ebooklib
+from ebooklib import epub
+from app.settings import BASE_URL
+from .book_helpers import epub2text, epub2thtml
+import time
+import sys,os
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(post_save, sender='core.Book')
+def create_chapters(sender, instance=None, created=False, **kwargs):
+    if created:
+        # path = BASE_URL + '/media/' + str(instance.file)
+        # print(len(epub2thtml(instance.file.path)))
+        pass
 
 
 class UserManager(BaseUserManager):
@@ -153,7 +167,7 @@ class Author(models.Model):
     last_name = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
-	    return str(self.first_name) + str(self.last_name)
+	    return str(self.first_name) + ' '  + str(self.last_name)
         
 
 class Book(models.Model):
@@ -169,7 +183,7 @@ class Book(models.Model):
     ]
     age_category = models.CharField(blank=True, null=True, max_length=10, choices=AGE_CATEGORIES, default='0+')
     paper_count = models.IntegerField(blank=True, null=True)
-    rating = models.PositiveIntegerField(blank=True, null=True)
+    rating = models.FloatField(blank=True, null=True)
     status = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)

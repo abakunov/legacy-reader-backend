@@ -161,7 +161,7 @@ class AddFavouriteBooksView(views.APIView):
 
 class GetMainPageDataView(views.APIView):
     def get(self, request):
-        try:
+        # try:
             promo = PromoSerializer(Promo.objects.all(), many=True).data
             for p in promo:
                 p['image'] = BASE_URL + p['image']
@@ -175,7 +175,8 @@ class GetMainPageDataView(views.APIView):
             for category in queryset:
                 first_books = BookSerializer(Book.objects.filter(category=category)[:10], many=True).data
                 for b in first_books:
-                    b['image'] = BASE_URL + b['image']
+                    if b['image'] is not None:
+                        b['image'] = BASE_URL + b['image']
                 categories.append({
                     'id': category.pk,
                     'name': category.name,
@@ -188,8 +189,8 @@ class GetMainPageDataView(views.APIView):
                 'categories': categories,
             }
             return Response({'data': data}, status=status.HTTP_200_OK)
-        except Exception:
-            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        # except Exception:
+        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnlockChapterView(views.APIView):
