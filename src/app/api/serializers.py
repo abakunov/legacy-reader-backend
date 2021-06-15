@@ -1,7 +1,7 @@
 from django.db.models import fields
 from rest_framework import serializers
 
-from core.models import User, Book, Review, Genre, Category, Promo, Chapter
+from core.models import User, Book, Review, Genre, Category, Promo, Chapter, Author
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,9 +10,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BookSerializer(serializers.ModelSerializer):
+class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Book
+        model = Author
         fields = '__all__'
 
 
@@ -37,6 +37,21 @@ class GenreSerializer(serializers.ModelSerializer):
 class PromoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Promo
+        fields = '__all__'
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class BookSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+    genre = GenreSerializer()
+    category = CategorySerializer()
+    class Meta:
+        model = Book
         fields = '__all__'
 
     

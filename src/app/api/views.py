@@ -2,7 +2,7 @@ from django.db.models import query
 from django.http import request
 from rest_framework import generics, views
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,31 +14,32 @@ from app.settings import BASE_URL
 class GetUserDataView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class UpdateUserDataView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetDetailedBookView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetBooksView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['rating', 'genre', 'category']
     search_fields = ['title']
 
 
 class GetChaptersListView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             user = request.GET['user']
@@ -60,6 +61,7 @@ class GetChaptersListView(views.APIView):
 
 
 class GetChapterView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             chapter = request.GET['chapter']
@@ -82,40 +84,41 @@ class GetChapterView(views.APIView):
 class GetBalanceView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = BalanceSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class CreateReviewView(generics.CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetGenresView(generics.ListAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetUsersReadingSettingsView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSettingsSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class UpdateUsersReadingSettingsView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSettingsSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetPromoView(generics.ListAPIView):
     queryset = Promo.objects.all()
     serializer_class = PromoSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class GetCategoryView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             queryset = Category.objects.all()
@@ -135,15 +138,16 @@ class GetCategoryView(views.APIView):
 
 
 class GetFavouriteBooksView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [AllowAny]
 
     def get_queryset(self):
         return User.objects.get(pk=self.request.GET['user']).favourite_books.all()
 
 
 class AddFavouriteBooksView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             action = request.data['action']
@@ -160,8 +164,9 @@ class AddFavouriteBooksView(views.APIView):
 
 
 class GetMainPageDataView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        # try:
+        try:
             promo = PromoSerializer(Promo.objects.all(), many=True).data
             for p in promo:
                 p['image'] = BASE_URL + p['image']
@@ -189,11 +194,12 @@ class GetMainPageDataView(views.APIView):
                 'categories': categories,
             }
             return Response({'data': data}, status=status.HTTP_200_OK)
-        # except Exception:
-        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnlockChapterView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             chapter = Chapter.objects.get(pk=request.GET['chapter'])
@@ -213,6 +219,7 @@ class UnlockChapterView(views.APIView):
 
 
 class UnlockAllChaptersView(views.APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             book = Book.objects.get(pk=request.GET['book'])
