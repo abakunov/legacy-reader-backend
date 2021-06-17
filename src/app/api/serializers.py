@@ -2,6 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 
 from core.models import User, Book, Review, Genre, Category, Promo, Chapter, Author
+from app.settings import BASE_URL
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    image_url = serializers.CharField()
     class Meta:
         model = Author
         fields = '__all__'
@@ -29,18 +31,21 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    image_url = serializers.CharField()
     class Meta:
         model = Genre
         fields = '__all__'
 
 
 class PromoSerializer(serializers.ModelSerializer):
+    image_url = serializers.CharField()
     class Meta:
         model = Promo
         fields = '__all__'
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    image_url = serializers.CharField()
     class Meta:
         model = Category
         fields = '__all__'

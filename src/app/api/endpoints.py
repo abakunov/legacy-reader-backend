@@ -23,6 +23,7 @@ api_urls = [
     path('book/chapter/get/', GetChapterView.as_view(), name='get_chapter'),
     path('book/chapter/unlock/', UnlockChapterView.as_view(), name='unlock_chapter'),
     path('book/chapter/unlock/all/', UnlockAllChaptersView.as_view(), name='unlock_all_chapters'),
+    path('book/genre_page/get/', GetGenrePageDataView.as_view(), name='get_genre_page'),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     path('password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

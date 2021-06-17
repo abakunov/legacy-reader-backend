@@ -166,14 +166,9 @@ class AddFavouriteBooksView(views.APIView):
 class GetMainPageDataView(views.APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        try:
+        # try:
             promo = PromoSerializer(Promo.objects.all(), many=True).data
-            for p in promo:
-                p['image'] = BASE_URL + p['image']
-
             genres = GenreSerializer(Genre.objects.all(), many=True).data
-            for g in genres:
-                g['image'] = BASE_URL + g['image']
 
             queryset = Category.objects.all()
             categories = []
@@ -194,8 +189,40 @@ class GetMainPageDataView(views.APIView):
                 'categories': categories,
             }
             return Response({'data': data}, status=status.HTTP_200_OK)
-        except Exception:
-            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        # except Exception:
+        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetGenrePageDataView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        # try:
+            promo = PromoSerializer(Promo.objects.all(), many=True).data
+            for p in promo:
+                p['image'] = BASE_URL + p['image']
+
+            genre = Genre.objects.get(pk=request.GET['genre'])
+
+            queryset = Category.objects.all()
+            categories = []
+            for category in queryset:
+                first_books = BookSerializer(Book.objects.filter(category=category, genre=genre)[:10], many=True).data
+                for b in first_books:
+                    if b['image'] is not None:
+                        b['image'] = BASE_URL + b['image']
+                categories.append({
+                    'id': category.pk,
+                    'name': category.name,
+                    'first_books': first_books,
+                })
+
+            data = {
+                'promo': promo,
+                'categories': categories,
+            }
+            return Response({'data': data}, status=status.HTTP_200_OK)
+        # except Exception:
+        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnlockChapterView(views.APIView):

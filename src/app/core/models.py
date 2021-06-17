@@ -121,6 +121,10 @@ class Genre(models.Model):
     name = models.CharField(max_length=64)
     image = models.ImageField(blank=True, null=True)
 
+    @property
+    def image_url(self):
+        return BASE_URL + '/media/' + str(self.image)
+
     def __str__(self):
         return self.name
 
@@ -128,6 +132,10 @@ class Genre(models.Model):
 class Promo(models.Model):
     book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
+
+    @property
+    def image_url(self):
+        return BASE_URL + '/media/' + str(self.image)
 
 
 class BookStatus(models.Model):
@@ -139,6 +147,10 @@ class BookStatus(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=64)
     image = models.ImageField(blank=True, null=True)
+
+    @property
+    def image_url(self):
+        return BASE_URL + '/media/' + str(self.image)
 
     def __str__(self):
         return self.name
@@ -167,6 +179,10 @@ class Author(models.Model):
     last_name = models.CharField(max_length=64, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
 
+    @property
+    def image_url(self):
+        return BASE_URL + '/media/' + str(self.image)
+
     def __str__(self):
 	    return str(self.first_name) + ' '  + str(self.last_name)
         
@@ -190,6 +206,10 @@ class Book(models.Model):
     image = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     file = models.FileField(blank=True, null=True)
+
+    @property
+    def image_url(self):
+        return BASE_URL + '/media/' + str(self.image)
 
     @property
     def chapters_amount(self):
