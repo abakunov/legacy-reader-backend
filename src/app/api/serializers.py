@@ -55,6 +55,8 @@ class BookSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     genre = GenreSerializer()
     category = CategorySerializer()
+    chapters_amount = serializers.IntegerField()
+    reviews_amount = serializers.IntegerField()
     class Meta:
         model = Book
         fields = '__all__'

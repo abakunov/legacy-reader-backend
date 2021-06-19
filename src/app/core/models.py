@@ -212,6 +212,10 @@ class Book(models.Model):
         return BASE_URL + '/media/' + str(self.image)
 
     @property
+    def reviews_amount(self):
+        return len(Review.objects.filter(book=self))
+
+    @property
     def chapters_amount(self):
         return len(Chapter.objects.filter(book=self))
 
