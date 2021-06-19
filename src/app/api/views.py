@@ -12,9 +12,14 @@ from app.settings import BASE_URL
 
 
 class GetUserDataView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    def get(self, request):
+        try:
+            user = request.user
+            data = UserSerializer(user).data
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateUserDataView(generics.UpdateAPIView):

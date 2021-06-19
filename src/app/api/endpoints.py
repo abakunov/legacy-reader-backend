@@ -5,7 +5,7 @@ from .views import *
 from rest_auth.views import PasswordResetConfirmView
 
 api_urls = [
-    path('user/data/<int:pk>/', GetUserDataView.as_view(), name='get_users_data'),
+    path('user/data/', GetUserDataView.as_view(), name='get_users_data'),
     path('user/data/update/<int:pk>/', UpdateUserDataView.as_view(), name='update_users_data'),
     path('user/settings/get/<int:pk>/', GetUsersReadingSettingsView.as_view(), name='get_user_settings'),
     path('user/settings/update/<int:pk>/', UpdateUsersReadingSettingsView.as_view(), name='get_user_settings'),
