@@ -188,7 +188,7 @@ class Author(models.Model):
         
 
 class Book(models.Model):
-    title = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100, blank=True, null=True, default='')
     author = models.ForeignKey(Author, on_delete=models.CASCADE, blank=True, null=True)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE, blank=True, null=True)
     AGE_CATEGORIES = [
@@ -199,8 +199,8 @@ class Book(models.Model):
         ('18+', '18+')
     ]
     age_category = models.CharField(blank=True, null=True, max_length=10, choices=AGE_CATEGORIES, default='0+')
-    paper_count = models.IntegerField(blank=True, null=True)
-    rating = models.FloatField(blank=True, null=True)
+    paper_count = models.IntegerField(blank=True, null=True, default=0)
+    rating = models.FloatField(blank=True, null=True, default=0.0)
     status = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)

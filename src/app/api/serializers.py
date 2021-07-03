@@ -8,7 +8,8 @@ from app.settings import BASE_URL
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('balance', )
 
 
 class AuthorSerializer(serializers.ModelSerializer):
