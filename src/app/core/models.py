@@ -188,8 +188,9 @@ class Author(models.Model):
 
 
 class Price(models.Model):
-    fiat_price = models.PositiveIntegerField(blank=True, null=True)
-    coins = models.PositiveIntegerField(blank=True, null=True)
+    fiat_price = models.PositiveIntegerField(blank=True, null=True, default=0)
+    coins = models.PositiveIntegerField(blank=True, null=True, default=0)
+    bonus = models.PositiveIntegerField(blank=True, null=True, default=0)
         
 
 class Book(models.Model):
