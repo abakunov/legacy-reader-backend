@@ -1,7 +1,7 @@
 from django.db.models import fields
 from rest_framework import serializers
 
-from core.models import User, Book, Review, Genre, Category, Promo, Chapter, Author
+from core.models import User, Book, Review, Genre, Category, Promo, Chapter, Author, Price
 from app.settings import BASE_URL
 
 
@@ -16,6 +16,12 @@ class AuthorSerializer(serializers.ModelSerializer):
     image_url = serializers.CharField()
     class Meta:
         model = Author
+        fields = '__all__'
+
+
+class PriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Price
         fields = '__all__'
 
 
@@ -60,7 +66,7 @@ class BookSerializer(serializers.ModelSerializer):
     reviews_amount = serializers.IntegerField()
     class Meta:
         model = Book
-        fields = '__all__'
+        exclude = ('file', )
 
     
 class UserSettingsSerializer(serializers.ModelSerializer):

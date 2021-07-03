@@ -28,10 +28,29 @@ class UpdateUserDataView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class GetDetailedBookView(generics.RetrieveAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+class GetPricesView(generics.ListAPIView):
+    queryset = Price.objects.all()
+    serializer_class = PriceSerializer
     permission_classes = [IsAuthenticated]
+
+
+class GetDetailedBookView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        try:
+            book = Book.objects.get(pk=request.GET['book'])
+            data = BookSerializer(book).data
+            try:
+                data['is_in_favourites'] = book in request.user.favourite_books.all()
+            except Exception:
+                data['is_in_favourites'] = False
+            try:
+                data['image'] = BASE_URL + data['image']
+            except Exception:
+                pass
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetBooksView(generics.ListAPIView):

@@ -185,6 +185,11 @@ class Author(models.Model):
 
     def __str__(self):
 	    return str(self.first_name) + ' '  + str(self.last_name)
+
+
+class Price(models.Model):
+    fiat_price = models.PositiveIntegerField(blank=True, null=True)
+    coins = models.PositiveIntegerField(blank=True, null=True)
         
 
 class Book(models.Model):
@@ -201,11 +206,11 @@ class Book(models.Model):
     age_category = models.CharField(blank=True, null=True, max_length=10, choices=AGE_CATEGORIES, default='0+')
     paper_count = models.IntegerField(blank=True, null=True, default=0)
     rating = models.FloatField(blank=True, null=True, default=0.0)
-    status = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     file = models.FileField(blank=True, null=True)
+
 
     @property
     def image_url(self):
