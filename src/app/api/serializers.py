@@ -19,6 +19,11 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BookFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['file',]
+
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price

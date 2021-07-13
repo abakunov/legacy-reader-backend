@@ -28,4 +28,6 @@ api_urls = [
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     path('password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('book/get_file/', GetBookFile.as_view(), name='get_file'),
+    path('user/top_up_balance/', TopUpBalance.as_view(), name='top_up_balance'),
 ]

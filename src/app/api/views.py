@@ -53,6 +53,19 @@ class GetDetailedBookView(views.APIView):
             return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class TopUpBalance(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        try:
+            user = request.user
+            _sum = int(request.GET['sum'])
+            user.balance += _sum
+            user.save()
+            return Response({'status': 'OK'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class GetBooksView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -284,5 +297,19 @@ class UnlockAllChaptersView(views.APIView):
                     else:
                         return Response({'status': 'Insufficient funds'}, status=status.HTTP_200_OK)
             return Response({'status': 'OK'}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetBookFile(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        try:
+            book = Book.objects.get(pk=request.GET['book'])
+            try:
+                file = BASE_URL+book.file.url
+            except Exception:
+                return Response({'status': 'File not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'file': file}, status=status.HTTP_200_OK)
         except Exception:
             return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
