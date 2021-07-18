@@ -9,6 +9,7 @@ import ebooklib
 from ebooklib import epub
 from app.settings import BASE_URL
 from .book_helpers import epub2text, epub2thtml
+from .chapters_parser import parse_chapters
 import time
 import sys,os
 
@@ -22,9 +23,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 @receiver(post_save, sender='core.Book')
 def create_chapters(sender, instance=None, created=False, **kwargs):
     if created:
-        # path = BASE_URL + '/media/' + str(instance.file)
-        # print(len(epub2thtml(instance.file.path)))
-        pass
+        path = instance.file.path
+        parse_chapters(path)
 
 
 class UserManager(BaseUserManager):
@@ -165,10 +165,9 @@ class Review(models.Model):
 
 class Chapter(models.Model):
     name = models.CharField(max_length=64)
-    cost = models.PositiveIntegerField(blank=True, null=True)
-    number_in_book = models.PositiveIntegerField(blank=True, null=True)
+    cost = models.PositiveIntegerField(blank=True, null=True, default=50)
+    index = models.PositiveIntegerField(blank=True, null=True)
     book = models.ForeignKey('core.Book', on_delete=models.CASCADE, blank=True, null=True)
-    text = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
