@@ -1,5 +1,4 @@
 import epub_meta
-from .models import Chapter
 
 def parse_chapters(path):
     data = epub_meta.get_epub_metadata(path, read_toc=True)
