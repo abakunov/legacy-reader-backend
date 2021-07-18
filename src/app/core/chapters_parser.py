@@ -13,6 +13,9 @@ def parse_chapters(path):
 
 
 def create_chapters(path):
+    print('jdnfhdbvhnbfdvfb')
     data = parse_chapters(path)
+    print(1111111)
     for c in data:
+        print(222222222)
         Chapter.objects.create(name=c['title'], index=int(c['index'])) 

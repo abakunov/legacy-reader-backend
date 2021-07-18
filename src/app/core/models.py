@@ -9,10 +9,21 @@ import ebooklib
 from ebooklib import epub
 from app.settings import BASE_URL
 from .book_helpers import epub2text, epub2thtml
-from .chapters_parser import parse_chapters
+from .chapters_parser import create_chapters
 import time
 import sys,os
+import epub_meta
 
+def parse_chapters(path):
+    data = epub_meta.get_epub_metadata(path, read_toc=True)
+    chapters = data['toc']
+    result = []
+    for c in chapters:
+        result.append({
+            'index': c['index'],
+            'title': c['title']
+        })
+    return result
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -24,7 +35,13 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 def create_chapters(sender, instance=None, created=False, **kwargs):
     if created:
         path = instance.file.path
-        parse_chapters(path)
+        data = parse_chapters(path)
+        create = True
+        for c in data:
+            if c['title'] == 'Примечания':
+                break
+            else:
+                Chapter.objects.create(name=c['title'], index=int(c['index']), book=instance) 
 
 
 class UserManager(BaseUserManager):
