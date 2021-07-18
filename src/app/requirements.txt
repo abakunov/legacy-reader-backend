@@ -12,6 +12,7 @@ django-filter==2.4.0
 django-rest-auth==0.9.5
 djangorestframework==3.12.4
 EbookLib==0.17.1
+epub-meta==0.0.7
 gunicorn==20.1.0
 idna==2.10
 lxml==4.6.3
