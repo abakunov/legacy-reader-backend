@@ -9,6 +9,17 @@ from django_filters.rest_framework import DjangoFilterBackend
 from core.models import User, Book, Chapter
 from .serializers import *
 from app.settings import BASE_URL
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
 
 
 class GetUserDataView(generics.RetrieveAPIView):
@@ -78,7 +89,7 @@ class GetBooksView(generics.ListAPIView):
 class GetChaptersListView(views.APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        try:
+        # try:
             user = request.GET['user']
             book = request.GET['book']
             queryset = Chapter.objects.filter(book=Book.objects.get(pk=book))
@@ -89,12 +100,12 @@ class GetChaptersListView(views.APIView):
                     'name': chapter.name,
                     'book': chapter.book.pk,
                     'cost': chapter.cost,
-                    'number_in_book': chapter.number_in_book,
+                    'index': chapter.index,
                     'is_unlocked': chapter in User.objects.get(pk=user).unlocked_chapters.all(),
                 })
             return Response({'data': data}, status=status.HTTP_200_OK)
-        except Exception:
-            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        # except Exception:
+        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetChapterView(views.APIView):

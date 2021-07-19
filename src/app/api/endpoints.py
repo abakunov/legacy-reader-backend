@@ -30,4 +30,6 @@ api_urls = [
     path('password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('book/get_file/', GetBookFile.as_view(), name='get_file'),
     path('user/top_up_balance/', TopUpBalance.as_view(), name='top_up_balance'),
+    url(r'^rest-auth/facebook/$', FacebookLogin.as_view(), name='fb_login'),
+    path('rest-auth/google', GoogleLogin.as_view(), name='google_login'),
 ]
