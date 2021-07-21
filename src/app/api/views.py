@@ -89,10 +89,10 @@ class GetBooksView(generics.ListAPIView):
 class GetChaptersListView(views.APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        # try:
+        try:
             user = request.GET['user']
             book = request.GET['book']
-            queryset = Chapter.objects.filter(book=Book.objects.get(pk=book))
+            queryset = Chapter.objects.filter(book=Book.objects.get(pk=book)).order_by('id')
             data = []
             for chapter in queryset:
                 data.append({
@@ -104,8 +104,8 @@ class GetChaptersListView(views.APIView):
                     'is_unlocked': chapter in User.objects.get(pk=user).unlocked_chapters.all(),
                 })
             return Response({'data': data}, status=status.HTTP_200_OK)
-        # except Exception:
-        #     return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response({'status': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetChapterView(views.APIView):
